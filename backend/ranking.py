@@ -3,9 +3,7 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 from numpy import linalg as LA
-import json
-import math
-import matplotlib.pyplot as plt
+
 
 class ranking:
     # Load the CSV file into a Pandas dataframe
