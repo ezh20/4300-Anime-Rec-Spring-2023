@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 class ranking:
     # Load the CSV file into a Pandas dataframe
     def __init__(self):
-        self.df = pd.read_csv('/Users/ruvenkotz/Downloads/CS_4300/4300-Anime-Rec-Spring-2023/data/output.csv')
+        self.df = pd.read_csv('../data/output.csv')
 
         # Rename the "sypnopsis" column to "synopsis"
         self.df = self.df.rename(columns={'sypnopsis': 'synopsis'})
@@ -26,7 +26,8 @@ class ranking:
         n_feats = 5000
         tfidf_vec = self.build_vectorizer(max_features=n_feats, stop_words="english")
         doc_by_vocab = np.empty([len(self.df), n_feats])
-        doc_by_vocab = tfidf_vec.fit_transform(self.df['synopsis'].values.astype('U')).toarray()
+        doc_by_vocab = tfidf_vec.fit_transform(self.df['synopsis'].values.astype('U'))
+        # doc_by_vocab = doc_by_vocab.toarray()
         index_to_vocab = {i:v for i, v in enumerate(tfidf_vec.get_feature_names())}
 
         self.movie_sims_cos = self.build_movie_sims_cos(1000, self.anime_index_to_name, doc_by_vocab, self.anime_name_to_index, self.get_sim)

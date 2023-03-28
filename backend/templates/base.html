@@ -1,5 +1,5 @@
 <!doctype html>
-<title>{% block title %}{% endblock %} - Flaskr</title>
+<title>{% block title %}{% endblock %} AnimeRec</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -68,7 +68,7 @@
 
                     </select>
                     
-                    <button type="submit">Submit</button>
+                    <button onclick= 'toResults()' type="submit">Submit</button>
                 </form>
             </div>
         </div>
@@ -78,6 +78,12 @@
     </div>
 
     <script>
+
+        function toResults() {
+            var anime = document.getElementById("anime-input").value
+            var genre = document.getElementById("genre-select").value
+            window.location.href = '/results'
+        }
 
         function answerBoxTemplate(title,titleDesc){
             return `<div class=''>

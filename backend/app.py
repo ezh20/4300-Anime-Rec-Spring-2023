@@ -40,8 +40,6 @@ def home():
 
 @app.route("/results")
 def to_results():
-    current_url = request.url
-
     r = ranking()
     anime = "Cowboy Bebop"
     genres = ["Action", "Drama"]

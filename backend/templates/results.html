@@ -1,0 +1,62 @@
+<!doctype html>
+<title>{% block title %}{% endblock %} - Flaskr</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap" rel="stylesheet">
+
+<body>
+    <div class="full-body-container">
+        <div class="top-text">
+            <div class="google-colors">
+                <style>
+                    /* Add some basic styles for the form */
+                    .form-container {
+                      max-width: 500px;
+                      margin: auto;
+                      padding: 20px;
+                      background-color: #f2f2f2;
+                      border-radius: 10px;
+                    }
+              
+                    .form-container label,
+                    .form-container input,
+                    .form-container select,
+                    .form-container button {
+                      display: block;
+                      width: 100%;
+                      margin-bottom: 10px;
+                    }
+              
+                    .form-container label {
+                      font-weight: bold;
+                    }
+              
+                    .form-container select {
+                      height: 100px;
+                    }
+              
+                    .form-container button {
+                      background-color: #4CAF50;
+                      color: white;
+                      border: none;
+                      border-radius: 5px;
+                      cursor: pointer;
+                    }
+              
+                    .form-container button:hover {
+                      background-color: #3e8e41;
+                    }
+                </style>
+
+                <div class="form-container">
+                    <form>
+                        <ol>
+                            <li> {{ results[item] }}</li>
+                        </ol>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+</body>
