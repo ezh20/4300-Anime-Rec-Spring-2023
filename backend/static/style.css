@@ -91,12 +91,12 @@
 }
 
 .card {
-    width: 50vw;
+    width: 60vw;
     height: 15vh;
     margin: 0.5em;
     background-color: bisque;
     font-family: 'Open Sans', sans-serif;
-    font-size: 30px;
+    font-size: 24px;
     display: flex;
     justify-content: center;
 }
