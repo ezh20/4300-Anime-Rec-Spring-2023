@@ -38,16 +38,16 @@ def sql_search(episode):
 def home():
     return render_template('base.html',title="sample html")
 
-@app.route("/results")
+@app.route("/results", methods = ["POST"])
 def to_results():
     r = ranking()
-    anime = "Cowboy Bebop"
-    genres = ["Action", "Drama"]
+    anime = request.form['anime-input']
+    genres = request.form.getlist('genre-select')
     return render_template("results.html", results = r.get_ranking(anime, genres))
 
-@app.route("/episodes")
-def episodes_search():
-    text = request.args.get("title")
-    return sql_search(text)
+# @app.route("/episodes")
+# def episodes_search():
+#     text = request.args.get("title")
+#     return sql_search(text)
 
 app.run(debug=True)

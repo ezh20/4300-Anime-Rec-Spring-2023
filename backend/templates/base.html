@@ -1,5 +1,5 @@
 <!doctype html>
-<title>{% block title %}{% endblock %} AnimeRec</title>
+<title>{% block title %}{% endblock %} AnimeRec </title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,7 +51,7 @@
             </style>
 
             <div class="form-container">
-                <form>
+                <form action="/results" method="post">
                     <label for="anime-input">Insert an Anime you liked:</label>
                     <input type="text" id="anime-input" name="anime-input">
                     
@@ -68,7 +68,7 @@
 
                     </select>
                     
-                    <button onclick= 'toResults()' type="submit">Submit</button>
+                    <button type="submit">Submit</button>
                 </form>
             </div>
         </div>

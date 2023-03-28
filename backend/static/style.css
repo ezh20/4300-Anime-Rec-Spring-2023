@@ -89,3 +89,14 @@
 .episode-desc{
     font-family: 'Montserrat', sans-serif;
 }
+
+.card {
+    width: 50vw;
+    height: 15vh;
+    margin: 0.5em;
+    background-color: bisque;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 30px;
+    display: flex;
+    justify-content: center;
+}

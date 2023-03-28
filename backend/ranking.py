@@ -27,7 +27,7 @@ class ranking:
         tfidf_vec = self.build_vectorizer(max_features=n_feats, stop_words="english")
         doc_by_vocab = np.empty([len(self.df), n_feats])
         doc_by_vocab = tfidf_vec.fit_transform(self.df['synopsis'].values.astype('U'))
-        # doc_by_vocab = doc_by_vocab.toarray()
+        doc_by_vocab = doc_by_vocab.toarray()
         index_to_vocab = {i:v for i, v in enumerate(tfidf_vec.get_feature_names())}
 
         self.movie_sims_cos = self.build_movie_sims_cos(1000, self.anime_index_to_name, doc_by_vocab, self.anime_name_to_index, self.get_sim)
