@@ -3,6 +3,7 @@ import os
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
+from ranking import ranking
 
 # ROOT_PATH for linking with all your files. 
 # Feel free to use a config.py or settings.py with a global export variable
@@ -19,7 +20,7 @@ MYSQL_DATABASE = "anime"
 mysql_engine = MySQLDatabaseHandler(MYSQL_USER,MYSQL_USER_PASSWORD,MYSQL_PORT,MYSQL_DATABASE)
 
 # Path to init.sql file. This file can be replaced with your own file for testing on localhost, but do NOT move the init.sql file
-mysql_engine.load_file_into_db()
+# mysql_engine.load_file_into_db()
 
 app = Flask(__name__)
 CORS(app)
@@ -36,6 +37,15 @@ def sql_search(episode):
 @app.route("/")
 def home():
     return render_template('base.html',title="sample html")
+
+@app.route("/results")
+def to_results():
+    current_url = request.url
+
+    r = ranking()
+    anime = "Cowboy Bebop"
+    genres = ["Action", "Drama"]
+    return render_template("results.html", results = r.get_ranking(anime, genres))
 
 @app.route("/episodes")
 def episodes_search():

@@ -142,6 +142,8 @@ class ranking:
                 jac_sim = 0
                 if(len(A.union(B)) > 0):
                     jac_sim = len(A.intersection(B))/len(A.union(B))
+                else:
+                    jac_sim = 0
                 genre_sims[i][j] = jac_sim
                 genre_sims[j][i] = jac_sim
                 
