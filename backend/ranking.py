@@ -1,6 +1,6 @@
 from __future__ import print_function
 import pandas as pd
-# from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 from numpy import linalg as LA
 
