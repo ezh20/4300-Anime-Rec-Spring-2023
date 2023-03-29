@@ -50,4 +50,4 @@ def to_results():
 #     text = request.args.get("title")
 #     return sql_search(text)
 
-app.run(debug=False)
+# app.run(debug=True)
