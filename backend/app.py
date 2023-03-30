@@ -3,7 +3,6 @@ import os
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
-from ranking import ranking
 
 # ROOT_PATH for linking with all your files. 
 # Feel free to use a config.py or settings.py with a global export variable
@@ -13,7 +12,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..",os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "secretpassword"
+MYSQL_USER_PASSWORD = "MayankRao16Cornell.edu"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "kardashiandb"
 
@@ -38,16 +37,9 @@ def sql_search(episode):
 def home():
     return render_template('base.html',title="sample html")
 
-@app.route("/results", methods = ["POST"])
-def to_results():
-    r = ranking()
-    anime = request.form['anime-input']
-    genres = request.form.getlist('genre-select')
-    return render_template("results.html", results = r.get_ranking(anime, genres))
+@app.route("/episodes")
+def episodes_search():
+    text = request.args.get("title")
+    return sql_search(text)
 
-# @app.route("/episodes")
-# def episodes_search():
-#     text = request.args.get("title")
-#     return sql_search(text)
-
-app.run(debug=True)
+# app.run(debug=True)
