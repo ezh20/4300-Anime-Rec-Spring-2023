@@ -44,7 +44,6 @@ def home():
 def to_results():
     query = "SELECT * FROM mytable"
     results = mysql_engine.query_selector(query)
-    print(results)
     df = pd.DataFrame(results, columns=["ID", "MAL_ID", "Name" , "Score", "Genres", "sypnopsis"])
     r = ranking(df)
     anime = request.form['anime-input']
@@ -56,4 +55,4 @@ def to_results():
 #     text = request.args.get("title")
 #     return sql_search(text)
 
-app.run(debug=True)
+# app.run(debug=True)
