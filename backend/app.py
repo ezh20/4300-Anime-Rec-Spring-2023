@@ -4,6 +4,8 @@ from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 from ranking import ranking
+import pandas as pd
+
 
 # ROOT_PATH for linking with all your files. 
 # Feel free to use a config.py or settings.py with a global export variable
@@ -15,7 +17,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..",os.curdir))
 MYSQL_USER = "root"
 MYSQL_USER_PASSWORD = "secretpassword"
 MYSQL_PORT = 3306
-MYSQL_DATABASE = "kardashiandb"
+MYSQL_DATABASE = "anime_data"
 
 mysql_engine = MySQLDatabaseHandler(MYSQL_USER,MYSQL_USER_PASSWORD,MYSQL_PORT,MYSQL_DATABASE)
 
@@ -28,11 +30,11 @@ CORS(app)
 # Sample search, the LIKE operator in this case is hard-coded, 
 # but if you decide to use SQLAlchemy ORM framework, 
 # there's a much better and cleaner way to do this
-def sql_search(episode):
-    query_sql = f"""SELECT * FROM episodes WHERE LOWER( title ) LIKE '%%{episode.lower()}%%' limit 10"""
-    keys = ["id","title","descr"]
-    data = mysql_engine.query_selector(query_sql)
-    return json.dumps([dict(zip(keys,i)) for i in data])
+# def sql_search(episode):
+#     query_sql = f"""SELECT * FROM episodes WHERE LOWER( title ) LIKE '%%{episode.lower()}%%' limit 10"""
+#     keys = ["id","title","descr"]
+#     data = mysql_engine.query_selector(query_sql)
+#     return json.dumps([dict(zip(keys,i)) for i in data])
 
 @app.route("/")
 def home():
@@ -40,7 +42,11 @@ def home():
 
 @app.route("/results", methods = ["POST"])
 def to_results():
-    r = ranking()
+    query = "SELECT * FROM mytable"
+    results = mysql_engine.query_selector(query)
+    print(results)
+    df = pd.DataFrame(results, columns=["ID", "MAL_ID", "Name" , "Score", "Genres", "sypnopsis"])
+    r = ranking(df)
     anime = request.form['anime-input']
     genres = request.form.getlist('genre-select')
     return render_template("results.html", results = r.get_ranking(anime, genres))
@@ -50,4 +56,4 @@ def to_results():
 #     text = request.args.get("title")
 #     return sql_search(text)
 
-# app.run(debug=True)
+app.run(debug=True)

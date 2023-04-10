@@ -7,9 +7,9 @@ from numpy import linalg as LA
 
 class ranking:
     # Load the CSV file into a Pandas dataframe
-    def __init__(self):
-        self.df = pd.read_csv('../data/output.csv')
-
+    def __init__(self, data):
+        # print(data)
+        self.df = data
         # Rename the "sypnopsis" column to "synopsis"
         self.df = self.df.rename(columns={'sypnopsis': 'synopsis'})
 
@@ -26,11 +26,11 @@ class ranking:
         doc_by_vocab = np.empty([len(self.df), n_feats])
         doc_by_vocab = tfidf_vec.fit_transform(self.df['synopsis'].values.astype('U'))
         doc_by_vocab = doc_by_vocab.toarray()
-        index_to_vocab = {i:v for i, v in enumerate(tfidf_vec.get_feature_names())}
+        # index_to_vocab = {i:v for i, v in enumerate(tfidf_vec.get_feature_names())}
 
-        self.movie_sims_cos = self.build_movie_sims_cos(1000, self.anime_index_to_name, doc_by_vocab, self.anime_name_to_index, self.get_sim)
+        self.movie_sims_cos = self.build_movie_sims_cos(900, self.anime_index_to_name, doc_by_vocab, self.anime_name_to_index, self.get_sim)
 
-        movie_sims_jac = self.build_movie_sims_jac(1000,self.df['Genres'])
+        # movie_sims_jac = self.build_movie_sims_jac(1000,self.df['Genres'])
 
 
     def build_vectorizer(self, max_features, stop_words, max_df=0.8, min_df=10, norm='l2'):
@@ -105,6 +105,7 @@ class ranking:
         
         for i in range(0, n_mov):
             for j in range(0, n_mov):
+
                 sim_score = input_get_sim_method(movie_index_to_name[i], movie_index_to_name[j], input_doc_mat, movie_name_to_index)
                 movie_sims_matrix[i][j] = sim_score
         
