@@ -22,13 +22,13 @@ services:
                                 - flask-network
         command: gunicorn --bind 0.0.0.0:5000 --workers 4 "app:app"
     db:
-        container_name: anime_db
+        container_name: ${TEAM_NAME}_db
         image: mysql:latest
         restart: always
         environment:
                 MYSQL_USER: admin
                 MYSQL_PASSWORD: admin
-                MYSQL_DATABASE: anime_db
+                MYSQL_DATABASE: animerecs_db
                 MYSQL_ROOT_PASSWORD: admin
         volumes:
                 - ./init.sql:/docker-entrypoint-initdb.d/init.sql
