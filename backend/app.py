@@ -36,16 +36,36 @@ CORS(app)
 #     data = mysql_engine.query_selector(query_sql)
 #     return json.dumps([dict(zip(keys,i)) for i in data])
 
+r = None
+start= True
+matrix = None
+
+def get_matrix():
+    query = "SELECT * FROM movie_sims"
+    results = mysql_engine.query_selector(query)
+    rows = [row[1] for row in results.fetchall()]
+    # Split each row string into a list of doubles and store them as a nested list
+    data = [[float(x) for x in row.split(',')] for row in rows]
+    return data
+
+
 @app.route("/")
 def home():
+    global r
+    global start
+    global matrix
+    if start:
+        matrix = get_matrix()
+        query = "SELECT * FROM mytable"
+        results = mysql_engine.query_selector(query)
+        df = pd.DataFrame(results, columns=["MAL_ID", "Name" , "Score", "Genres", "sypnopsis"])
+        r = ranking(df, matrix)
+        start = False
+
     return render_template('base.html',title="sample html")
 
 @app.route("/results", methods = ["POST"])
 def to_results():
-    query = "SELECT * FROM mytable"
-    results = mysql_engine.query_selector(query)
-    df = pd.DataFrame(results, columns=["ID", "MAL_ID", "Name" , "Score", "Genres", "sypnopsis"])
-    r = ranking(df)
     anime = request.form['anime-input']
     genres = request.form.getlist('genre-select')
     return render_template("results.html", results = r.get_ranking(anime, genres))
@@ -55,4 +75,4 @@ def to_results():
 #     text = request.args.get("title")
 #     return sql_search(text)
 
-# app.run(debug=True)
+app.run(debug=True)

@@ -3,13 +3,15 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
 from numpy import linalg as LA
+import sqlite3
 
 
 class ranking:
     # Load the CSV file into a Pandas dataframe
-    def __init__(self, data):
+    def __init__(self, data, matrix):
+        n_mov = 2500
         # print(data)
-        self.df = data
+        self.df = data.iloc[:n_mov]
         # Rename the "sypnopsis" column to "synopsis"
         self.df = self.df.rename(columns={'sypnopsis': 'synopsis'})
 
@@ -28,8 +30,8 @@ class ranking:
         doc_by_vocab = doc_by_vocab.toarray()
         # index_to_vocab = {i:v for i, v in enumerate(tfidf_vec.get_feature_names())}
 
-        self.movie_sims_cos = self.build_movie_sims_cos(900, self.anime_index_to_name, doc_by_vocab, self.anime_name_to_index, self.get_sim)
-
+        # self.movie_sims_cos = self.build_movie_sims_cos(n_mov, self.anime_index_to_name, doc_by_vocab, self.anime_name_to_index, self.get_sim)
+        self.movie_sims_cos = np.array(matrix)
         # movie_sims_jac = self.build_movie_sims_jac(1000,self.df['Genres'])
 
 
