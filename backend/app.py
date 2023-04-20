@@ -36,7 +36,7 @@ CORS(app)
 #     data = mysql_engine.query_selector(query_sql)
 #     return json.dumps([dict(zip(keys,i)) for i in data])
 
-r = None
+global r
 start= True
 matrix = None
 
