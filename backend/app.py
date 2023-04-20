@@ -1,6 +1,6 @@
 import json
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 from ranking import ranking
@@ -25,6 +25,8 @@ mysql_engine = MySQLDatabaseHandler(MYSQL_USER,MYSQL_USER_PASSWORD,MYSQL_PORT,MY
 mysql_engine.load_file_into_db()
 
 app = Flask(__name__)
+app.secret_key = 'mysecretkey'
+
 CORS(app)
 
 # Sample search, the LIKE operator in this case is hard-coded, 
@@ -36,9 +38,9 @@ CORS(app)
 #     data = mysql_engine.query_selector(query_sql)
 #     return json.dumps([dict(zip(keys,i)) for i in data])
 
-global r
 start= True
 matrix = None
+r = None
 
 def get_matrix():
     query = "SELECT * FROM movie_sims"
@@ -51,9 +53,7 @@ def get_matrix():
 
 @app.route("/")
 def home():
-    global r
-    global start
-    global matrix
+    global start, r, matrix
     if start:
         matrix = get_matrix()
         query = "SELECT * FROM mytable"
@@ -68,7 +68,8 @@ def home():
 def to_results():
     anime = request.form['anime-input']
     genres = request.form.getlist('genre-select')
-    return render_template("results.html", results = r.get_ranking(anime, genres))
+    if r != None:
+        return render_template("results.html", results = r.get_ranking(anime, genres))
 
 # @app.route("/episodes")
 # def episodes_search():
