@@ -30,6 +30,8 @@ class ranking:
         doc_by_vocab = np.empty([len(self.df), n_feats])
         doc_by_vocab = tfidf_vec.fit_transform(self.df['synopsis'].values.astype('U'))
         doc_by_vocab = doc_by_vocab.toarray()
+        self.word_to_index = tfidf_vec.vocabulary_
+
         self.movie_sims_cos = np.array(matrix)
         docs_compressed, s, words_compressed = svds(doc_by_vocab, k=40)
         words_compressed = words_compressed.transpose()
@@ -117,48 +119,8 @@ class ranking:
         return movie_sims_matrix
 
 
-    def build_movie_sims_jac(self, n_mov, input_data):
-        """Returns a movie_sims_jac matrix of size (num_movies,num_movies) where for (i,j) :
-            [i,j] should be the jaccard similarity between the category sets for movies i and j
-            such that movie_sims_jac[i,j] = movie_sims_jac[j,i]. 
-            
-        Note: 
-            Movies sometimes contain *duplicate* categories! You should only count a category once
-            
-            A movie should have a jaccard similarity of 1.0 with itself.
-        
-        Params: {n_mov: Integer, the number of movies,
-                input_data: List<Dictionary>, a list of dictionaries where each dictionary 
-                        represents the movie_script_data including the script and the metadata of each movie script}
-        Returns: Numpy Array 
-        """
-        genre_sims = np.zeros((n_mov, n_mov))
-        
-        # YOUR CODE HERE
-        for i in range (0, n_mov):
-            for j in range (0, n_mov):
-                Al = input_data[i].split(',')
-                Al = [s.strip() for s in Al]
-                A = set(Al)
-                
-                Bl = input_data[j].split(',')
-                Bl = [s.strip() for s in Bl]
-                B = set(Bl)
-                jac_sim = 0
-                if(len(A.union(B)) > 0):
-                    jac_sim = len(A.intersection(B))/len(A.union(B))
-                else:
-                    jac_sim = 0
-                genre_sims[i][j] = jac_sim
-                genre_sims[j][i] = jac_sim
-                
-        
-        return genre_sims
 
-
-
-
-    def get_ranked_movies(self, mov, matrix, anime_name_to_index, anime_index_to_name):
+    def get_ranked_movies(self, mov, matrix, anime_name_to_index, anime_index_to_name, df):
         """
         Return sorted rankings (most to least similar) of movies as 
         a list of two-element tuples, where the first element is the 
@@ -168,7 +130,9 @@ class ranking:
                 matrix: np.ndarray}
         Returns: List<Tuple>
         """
-        
+        if mov not in anime_name_to_index:
+            return[(df['Name'][i], 1) for i in range(0,len(df['Name']))]
+
         # Get movie index from movie name
         mov_idx = anime_name_to_index[mov]
         
@@ -177,48 +141,73 @@ class ranking:
         mov_score_lst = [(anime_index_to_name[i], s) for i,s in enumerate(score_lst)]
         
         # Do not account for movie itself in ranking
-        mov_score_lst = mov_score_lst[:mov_idx] + mov_score_lst[mov_idx+1:]
-        
-        # Sort rankings by score
-        mov_score_lst = sorted(mov_score_lst, key=lambda x: -x[1])
-        
+        mov_score_lst[mov_idx] = (mov_score_lst[mov_idx][0], 0)
+            
         return mov_score_lst
 
-    def multiply_jac_sim(self, anime, genres, arr, anime_name_to_index, df):
+
+    def closest_projects(self, word_in, project_repr_in, words_representation_in, df):
+        if word_in not in self.word_to_index: return[(df['Name'][i], 1) for i in range(0,len(df['Name']))]
+        sims = project_repr_in.dot(words_representation_in[self.word_to_index[word_in],:])
+        return [(df['Name'][i],sims[i]) for i in range(0,len(sims))]
+
+    def multiply_jac_sim(self, genres, df):
         # Get movie index from movie name
-        anime_idx = anime_name_to_index[anime]
-        score_lst = []
-        
-        for i,tup in enumerate(arr):
-            
-            A = set(genres)
-            l = df['Genres'][anime_name_to_index[tup[0]]].split(',')
+        arr = []
+        A = set(genres)
+        if len(A) == 0:
+            return[(df['Name'][i], 1) for i in range(0,len(df['Name']))]
+        for index, row in df.iterrows():
+            l = row['Genres'].split(',')
             l = [s.strip() for s in l]
             B = set(l)
             jac_sim = 0
-            if(len(A.union(B)) > 0):
-                jac_sim = len(A.intersection(B))/len(A.union(B))        
-            arr[i] = (tup[0], tup[1]*jac_sim)
+            # if(len(A.union(B)) > 0):
+            #     jac_sim = len(A.intersection(B))/len(A.union(B)) 
+            arr.append((row['Name'], len(A.intersection(B))))
             
-        arr = sorted(arr, key=lambda x: -x[1])
-
         return arr
+    
         
         
-    def multiply_ratings(self, arr, df):
-        for i, tup in enumerate(arr):
-            score = df['Score'][i]
+    def multiply_ratings(self, df):
+        arr = []
+        for index, row in df.iterrows():
+            score = row['Score']
             try:
                 score = float(score)
             except:
                 score = 5
-            arr[i] = (tup[0], score)
+            arr.append((row['Name'], score))
         return arr
 
 
+    def multiply_keywords(self, input_string, docs_compressed_normed, words_compressed_normed, df):
+        word_array = input_string.split(", ") # split the string into an array of words
+        word_array = [word.lower() for word in word_array] # convert all the words to lowercase
+        keywords_array = [(df['Name'][i], 1) for i in range(0,len(df['Name']))]
+        for w in word_array:
+            word = self.closest_projects(w, docs_compressed_normed, words_compressed_normed, df)
+            keywords_array = [(a[0], a[1]*b[1]) for a, b in zip(keywords_array, word)]
+        return keywords_array
 
-    def get_ranking(self, anime, genres):
-        initial_ranking = self.get_ranked_movies(anime, self.movie_sims_cos, self.anime_name_to_index, self.anime_index_to_name)
-        ranking_jac = self.multiply_jac_sim(anime, genres, initial_ranking, self.anime_name_to_index, self.df)
-        ranking_score = self.multiply_ratings(ranking_jac, self.df) 
-        return ranking_score[:10]  
+    def get_ranking(self, anime, genres, keywords):
+        
+
+        title_ranking = self.get_ranked_movies(anime, self.movie_sims_cos, self.anime_name_to_index, self.anime_index_to_name, self.df)
+        genre_ranking = self.multiply_jac_sim(genres, self.df)
+        score_ranking = self.multiply_ratings(self.df) 
+        keyword_ranking = self.multiply_keywords(keywords, self.docs_compressed_normed, self.words_compressed_normed, self.df)
+        
+
+        # Multiply the tuples in each list together
+        product = [(a[0], a[1]*b[1]*c[1]*d[1]) for a, b, c, d in zip(title_ranking, genre_ranking, score_ranking, keyword_ranking)]
+
+        sum_of_second_elements = 0
+        for tuple in product:
+            sum_of_second_elements += tuple[1]
+
+
+        result = sorted(product, key=lambda x: x[1], reverse=True)
+
+        return result[:10]  

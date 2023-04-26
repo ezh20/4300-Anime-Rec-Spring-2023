@@ -70,7 +70,7 @@ def to_results():
     genres = request.form.getlist('genre-select')
     keywords = request.form['keyword-input']
     if r != None:
-        return render_template("results.html", results = r.get_ranking(anime, genres))
+        return render_template("results.html", results = r.get_ranking(anime, genres, keywords))
 
 # @app.route("/episodes")
 # def episodes_search():
