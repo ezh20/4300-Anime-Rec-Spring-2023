@@ -68,6 +68,7 @@ def home():
 def to_results():
     anime = request.form['anime-input']
     genres = request.form.getlist('genre-select')
+    keywords = request.form['keyword-input']
     if r != None:
         return render_template("results.html", results = r.get_ranking(anime, genres))
 
@@ -76,4 +77,4 @@ def to_results():
 #     text = request.args.get("title")
 #     return sql_search(text)
 
-# app.run(debug=True)
+app.run(debug=True)
