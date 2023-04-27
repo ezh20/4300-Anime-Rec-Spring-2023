@@ -191,10 +191,22 @@ class ranking:
             keywords_array = [(a[0], a[1]*b[1]) for a, b in zip(keywords_array, word)]
         return keywords_array
 
+    def set_bottom_third(self, arr):
+        # get the 33% mark value
+        vals = [x[1] for x in arr]
+        bottom_third_mark = sorted(vals)[int(len(vals) * 0.33)]
+        
+        # set the entries with the bottom 20% of values to the 20% value
+        for i in range(len(arr)):
+            if arr[i][1] < bottom_third_mark:
+                arr[i] = (arr[i][0], bottom_third_mark)
+        
+        return arr
+
     def get_ranking(self, anime, genres, keywords):
         
 
-        title_ranking = self.get_ranked_movies(anime, self.movie_sims_cos, self.anime_name_to_index, self.anime_index_to_name, self.df)
+        title_ranking = self.set_bottom_third(self.get_ranked_movies(anime, self.movie_sims_cos, self.anime_name_to_index, self.anime_index_to_name, self.df))
         genre_ranking = self.multiply_jac_sim(genres, self.df)
         score_ranking = self.multiply_ratings(self.df) 
         keyword_ranking = self.multiply_keywords(keywords, self.docs_compressed_normed, self.words_compressed_normed, self.df)
@@ -209,5 +221,8 @@ class ranking:
 
 
         result = sorted(product, key=lambda x: x[1], reverse=True)
+        for i, tup in enumerate(result):
+            result[i] = (tup[0], self.df.loc[self.df['Name'] == tup[0], 'synopsis'].iloc[0])
 
+        #print(result])
         return result[:10]  
