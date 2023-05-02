@@ -39,27 +39,19 @@ CORS(app)
 #     return json.dumps([dict(zip(keys,i)) for i in data])
 
 start= True
-matrix = None
 r = None
 
-def get_matrix():
-    query = "SELECT * FROM movie_sims"
-    results = mysql_engine.query_selector(query)
-    rows = [row[1] for row in results.fetchall()]
-    # Split each row string into a list of doubles and store them as a nested list
-    data = [[float(x) for x in row.split(',')] for row in rows]
-    return data
+
 
 
 @app.route("/")
 def home():
     global start, r, matrix
     if start:
-        matrix = get_matrix()
         query = "SELECT * FROM mytable"
         results = mysql_engine.query_selector(query)
         df = pd.DataFrame(results, columns=["MAL_ID", "Name" , "Score", "Genres", "sypnopsis"])
-        r = ranking(df, matrix)
+        r = ranking(df)
         start = False
 
     return render_template('base.html',title="sample html")
@@ -77,4 +69,4 @@ def to_results():
 #     text = request.args.get("title")
 #     return sql_search(text)
 
-# app.run(debug=True)
+app.run(debug=True)

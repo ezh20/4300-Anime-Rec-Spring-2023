@@ -10,8 +10,8 @@ from sklearn.preprocessing import normalize
 
 class ranking:
     # Load the CSV file into a Pandas dataframe
-    def __init__(self, data, matrix):
-        n_mov = 2500
+    def __init__(self, data):
+        n_mov = 7000
         # print(data)
         self.df = data.iloc[:n_mov]
         # Rename the "sypnopsis" column to "synopsis"
@@ -29,10 +29,9 @@ class ranking:
         tfidf_vec = self.build_vectorizer(max_features=n_feats, stop_words="english")
         doc_by_vocab = np.empty([len(self.df), n_feats])
         doc_by_vocab = tfidf_vec.fit_transform(self.df['synopsis'].values.astype('U'))
-        doc_by_vocab = doc_by_vocab.toarray()
+        self.doc_by_vocab = doc_by_vocab.toarray()
         self.word_to_index = tfidf_vec.vocabulary_
 
-        self.movie_sims_cos = np.array(matrix)
         docs_compressed, s, words_compressed = svds(doc_by_vocab, k=40)
         words_compressed = words_compressed.transpose()
         self.words_compressed_normed = normalize(words_compressed, axis = 1)
@@ -89,9 +88,8 @@ class ranking:
         arr1 = input_doc_mat[index1]
         arr2 = input_doc_mat[index2]
         numerator = np.dot(arr1,arr2)
-        denomenator = LA.norm(arr1)*LA.norm(arr2)
         
-        return numerator/denomenator
+        return numerator
 
     def build_movie_sims_cos(self, n_mov, movie_index_to_name, input_doc_mat, movie_name_to_index, input_get_sim_method):
         """Returns a movie_sims matrix of size (num_movies,num_movies) where for (i,j):
@@ -120,7 +118,7 @@ class ranking:
 
 
 
-    def get_ranked_movies(self, mov, matrix, anime_name_to_index, anime_index_to_name, df):
+    def get_ranked_movies(self, mov, df, input_doc_mat, input_movie_name_to_index, ):
         """
         Return sorted rankings (most to least similar) of movies as 
         a list of two-element tuples, where the first element is the 
@@ -130,18 +128,17 @@ class ranking:
                 matrix: np.ndarray}
         Returns: List<Tuple>
         """
-        if mov not in anime_name_to_index:
+        if mov not in self.anime_name_to_index:
             return[(df['Name'][i], 1) for i in range(0,len(df['Name']))]
 
-        # Get movie index from movie name
-        mov_idx = anime_name_to_index[mov]
+        mov_score_lst = []
+        for index, row in df.iterrows(): 
+            mov2 = row['Name']
+            sim = 0
+            if mov != mov2:
+                sim = self.get_sim(mov, mov2, input_doc_mat, input_movie_name_to_index)
+            mov_score_lst.append((row['Name'], sim))
         
-        # Get list of similarity scores for movie
-        score_lst = matrix[mov_idx]
-        mov_score_lst = [(anime_index_to_name[i], s) for i,s in enumerate(score_lst)]
-        
-        # Do not account for movie itself in ranking
-        mov_score_lst[mov_idx] = (mov_score_lst[mov_idx][0], 0)
             
         return mov_score_lst
 
@@ -206,7 +203,7 @@ class ranking:
     def get_ranking(self, anime, genres, keywords):
         
 
-        title_ranking = self.set_bottom_third(self.get_ranked_movies(anime, self.movie_sims_cos, self.anime_name_to_index, self.anime_index_to_name, self.df))
+        title_ranking = self.set_bottom_third(self.get_ranked_movies(anime, self.df, self.doc_by_vocab, self.anime_name_to_index))
         genre_ranking = self.multiply_jac_sim(genres, self.df)
         score_ranking = self.multiply_ratings(self.df) 
         keyword_ranking = self.multiply_keywords(keywords, self.docs_compressed_normed, self.words_compressed_normed, self.df)
