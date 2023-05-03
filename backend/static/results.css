@@ -21,13 +21,33 @@ header {
     margin: 0 auto;
 }
 
+.static-card {
+    width: 800px;
+    height: 220px;
+    box-shadow: 0 4px 8px 0 rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px;
+    /* display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 10px;
+    grid-auto-rows: 43px;
+    grid-template-areas:
+      "b b b b d d d d"
+      "b b b b d d d d"
+      "b b b b d d d d"
+      "b b b b d d d d"; */
+    align-items: center;
+    position: relative;
+    font-size: 24px;
+}
+
 .card-holder {
     background-color: transparent;
     width: 800px;
     height: 220px;
     box-shadow: 0 4px 8px 0 rgba(255, 255, 255, 0.2);
     border-radius: 10px;
-    background-color: #333;
     padding: 20px;
     margin: 10px;
     perspective: 1000px;
