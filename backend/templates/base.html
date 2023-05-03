@@ -3,132 +3,118 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap"
-  rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap" rel="stylesheet">
 <body>
-  <div class="full-body-container">
-    <header>
-      <div class="title-wrapper">
-        <img src="anime.png" alt="Anime Logo" class="animated">
-        <h1>Anime Recommender</h1>
-      </div>
-      <form>
-        <input type="text" placeholder="Anime name...">
-        <button type="submit">Search</button>
-      </form>
-      <form action="/search" method="post">
-        <input type="text" name="search-term" placeholder="Anime name...">
-        <button type="submit">Search</button>
-      </form>
-    </header>
-    <div class="top-text">
-      <div class="google-colors">
-        <h1 id="main-heading">AnimeRec</h1>
-      </div>
-      <style>
-        /* Add some basic styles for the form */
-        .form-container {
-          max-width: 500px;
-          margin: auto;
-          padding: 20px;
-          background-color: #f2f2f2;
-          border-radius: 10px;
-        }
+    <div class="full-body-container">
+        <div class="top-text">
+            <div class="google-colors">
+                <h1 id="main-heading">AnimeRec</h1>
+            </div>
+            <style>
+                /* Add some basic styles for the form */
+                .form-container {
+                  max-width: 500px;
+                  margin: auto;
+                  padding: 20px;
+                  background-color: #f2f2f2;
+                  border-radius: 10px;
+                }
+          
+                .form-container label,
+                .form-container input,
+                .form-container select,
+                .form-container button {
+                  display: block;
+                  width: 100%;
+                  margin-bottom: 10px;
+                }
+          
+                .form-container label {
+                  font-weight: bold;
+                }
+          
+                .form-container select {
+                  height: 100px;
+                }
+          
+                .form-container button {
+                  background-color: #4CAF50;
+                  color: white;
+                  border: none;
+                  border-radius: 5px;
+                  cursor: pointer;
+                }
+          
+                .form-container button:hover {
+                  background-color: #3e8e41;
+                }
+            </style>
 
-        .form-container label,
-        .form-container input,
-        .form-container select,
-        .form-container button {
-          display: block;
-          width: 100%;
-          margin-bottom: 10px;
-        }
+            <div class="form-container">
+                <form action="/results" method="post">
+                    <label for="anime-input">Insert an Anime you liked:</label>
+                    <input type="text" id="anime-input" name="anime-input">
+                    
+                    <label for="genre-select">Select a genre:</label>
+                    <select id="genre-select" name="genre-select" multiple size="3">
+                      <option value="Comedy">Comedy</option>
+                      <option value="Action">Action</option>
+                      <option value="Fantasy">Fantasy</option>
+                      <option value="Adventure">Adventure</option>
+                      <option value="Kids">Kids</option>
+                      <option value="Drama">Drama</option>
+                      <option value="Sci-Fi">Sci-Fi</option>
+                      <option value="Music">Music</option>
 
-        .form-container label {
-          font-weight: bold;
-        }
+                    </select>
 
-        .form-container select {
-          height: 100px;
-        }
+                    <label for="anime-input">Enter some keywords:</label>
+                    <input type="text" id="keyword-input" name="keyword-input">
 
-        .form-container button {
-          background-color: #4CAF50;
-          color: white;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-        }
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
+        <div id="answer-box">
 
-        .form-container button:hover {
-          background-color: #3e8e41;
-        }
-      </style>
-
-      <div class="form-container">
-        <form action="/results" method="post">
-          <label for="anime-input">Insert an Anime you liked:</label>
-          <input type="text" id="anime-input" name="anime-input">
-
-          <label for="genre-select">Select a genre:</label>
-          <select id="genre-select" name="genre-select" multiple size="3">
-            <option value="Comedy">Comedy</option>
-            <option value="Action">Action</option>
-            <option value="Fantasy">Fantasy</option>
-            <option value="Adventure">Adventure</option>
-            <option value="Kids">Kids</option>
-            <option value="Drama">Drama</option>
-            <option value="Sci-Fi">Sci-Fi</option>
-            <option value="Music">Music</option>
-
-          </select>
-
-          <label for="anime-input">Enter some keywords:</label>
-          <input type="text" id="keyword-input" name="keyword-input">
-
-          <button type="submit">Submit</button>
-        </form>
-      </div>
+        </div>
     </div>
-    <div id="answer-box">
 
-    </div>
-  </div>
+    <script>
 
-  <script>
+        function toResults() {
+            var anime = document.getElementById("anime-input").value
+            var genre = document.getElementById("genre-select").value
+            var keywords = document.getElementById("keyword-input").value
+            window.location.href = '/results'
+        }
 
-    function toResults() {
-      var anime = document.getElementById("anime-input").value
-      var genre = document.getElementById("genre-select").value
-      var keywords = document.getElementById("keyword-input").value
-      window.location.href = '/results'
-    }
-
-    function answerBoxTemplate(title, titleDesc) {
-      return `<div class=''>
+        function answerBoxTemplate(title,titleDesc){
+            return `<div class=''>
                 <h3 class='episode-title'>${title}</h3>
                 <p class='episode-desc'>${titleDesc}</p>
             </div>`
-    }
+        }
 
-    function sendFocus() {
-      document.getElementById('filter-text-val').focus()
-    }
+        function sendFocus(){
+            document.getElementById('filter-text-val').focus()
+        }
 
-    function filterText() {
-      document.getElementById("answer-box").innerHTML = ""
-      console.log(document.getElementById("filter-text-val").value)
-      fetch("/episodes?" + new URLSearchParams({ title: document.getElementById("filter-text-val").value }).toString())
-        .then((response) => response.json())
-        .then((data) => data.forEach(row => {
+        function filterText(){
+            document.getElementById("answer-box").innerHTML = ""
+            console.log(document.getElementById("filter-text-val").value)
+            fetch("/episodes?" + new URLSearchParams({ title: document.getElementById("filter-text-val").value }).toString())
+            .then((response) => response.json())
+            .then((data) => data.forEach(row => {
+                
+                let tempDiv = document.createElement("div")
+                tempDiv.innerHTML = answerBoxTemplate(row.title,row.descr)
+                document.getElementById("answer-box").appendChild(tempDiv)
+            }));
 
-          let tempDiv = document.createElement("div")
-          tempDiv.innerHTML = answerBoxTemplate(row.title, row.descr)
-          document.getElementById("answer-box").appendChild(tempDiv)
-        }));
+        }
+            
+    </script>
 
-    }
-
-  </script>
+    <script src="../static/multiselect-dropdown.js" ></script>
 </body>

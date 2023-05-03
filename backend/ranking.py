@@ -11,11 +11,11 @@ from sklearn.preprocessing import normalize
 class ranking:
     # Load the CSV file into a Pandas dataframe
     def __init__(self, data):
-        n_mov = 7000
+        n_feats = 2500
         # print(data)
-        self.df = data.iloc[:n_mov]
+        self.df = data.iloc[:n_feats]
         # Rename the "sypnopsis" column to "synopsis"
-        self.df = self.df.rename(columns={'sypnopsis': 'synopsis'})
+        # self.df = self.df.rename(columns={'sypnopsis': 'synopsis'})
 
         # Drop Duplicate names
         self.df.drop_duplicates(subset='Name', inplace=True)
@@ -25,12 +25,14 @@ class ranking:
         self.anime_id_to_name = {v:k for k,v in self.anime_name_to_id.items()}
         self.anime_name_to_index = {name:self.anime_id_to_index[self.anime_name_to_id[name]] for name in self.df['Name']}
         self.anime_index_to_name = {v:k for k,v in self.anime_name_to_index.items()}
-        n_feats = 5000
         tfidf_vec = self.build_vectorizer(max_features=n_feats, stop_words="english")
-        doc_by_vocab = np.empty([len(self.df), n_feats])
+        doc_by_vocab = np.empty([len(self.df), 5000])
         doc_by_vocab = tfidf_vec.fit_transform(self.df['synopsis'].values.astype('U'))
         self.doc_by_vocab = doc_by_vocab.toarray()
         self.word_to_index = tfidf_vec.vocabulary_
+
+        # self.movie_sims_cos = np.array(matrix)
+        # self.movie_sims_cos = self.build_movie_sims_cos(2500, self.anime_index_to_name, doc_by_vocab, self.anime_name_to_index, self.get_sim)
 
         docs_compressed, s, words_compressed = svds(doc_by_vocab, k=40)
         words_compressed = words_compressed.transpose()
@@ -113,12 +115,13 @@ class ranking:
 
                 sim_score = input_get_sim_method(movie_index_to_name[i], movie_index_to_name[j], input_doc_mat, movie_name_to_index)
                 movie_sims_matrix[i][j] = sim_score
-        
+
+        # np.savetxt("matrix.csv", movie_sims_matrix, delimiter=",")
         return movie_sims_matrix
 
 
 
-    def get_ranked_movies(self, mov, df, input_doc_mat, input_movie_name_to_index, ):
+    def get_ranked_movies(self, mov, input_doc_mat, input_movie_name_to_index, df):
         """
         Return sorted rankings (most to least similar) of movies as 
         a list of two-element tuples, where the first element is the 
@@ -131,6 +134,13 @@ class ranking:
         if mov not in self.anime_name_to_index:
             return[(df['Name'][i], 1) for i in range(0,len(df['Name']))]
 
+        # # Get movie index from movie name
+        # mov_idx = anime_name_to_index[mov]
+        
+        # score_lst = matrix[mov_idx]
+        # mov_score_lst = [(anime_index_to_name[i], s) for i,s in enumerate(score_lst)]
+
+        # Get list of similarity scores for movie
         mov_score_lst = []
         for index, row in df.iterrows(): 
             mov2 = row['Name']
@@ -138,7 +148,6 @@ class ranking:
             if mov != mov2:
                 sim = self.get_sim(mov, mov2, input_doc_mat, input_movie_name_to_index)
             mov_score_lst.append((row['Name'], sim))
-        
             
         return mov_score_lst
 
@@ -180,7 +189,7 @@ class ranking:
 
 
     def multiply_keywords(self, input_string, docs_compressed_normed, words_compressed_normed, df):
-        word_array = input_string.split(", ") # split the string into an array of words
+        word_array = [x.strip() for x in input_string.split(",")] # split the string into an array of words
         word_array = [word.lower() for word in word_array] # convert all the words to lowercase
         keywords_array = [(df['Name'][i], 1) for i in range(0,len(df['Name']))]
         for w in word_array:
@@ -201,9 +210,7 @@ class ranking:
         return arr
 
     def get_ranking(self, anime, genres, keywords):
-        
-
-        title_ranking = self.set_bottom_third(self.get_ranked_movies(anime, self.df, self.doc_by_vocab, self.anime_name_to_index))
+        title_ranking = self.set_bottom_third(self.get_ranked_movies(anime, self.doc_by_vocab, self.anime_name_to_index, self.df))
         genre_ranking = self.multiply_jac_sim(genres, self.df)
         score_ranking = self.multiply_ratings(self.df) 
         keyword_ranking = self.multiply_keywords(keywords, self.docs_compressed_normed, self.words_compressed_normed, self.df)
@@ -221,5 +228,16 @@ class ranking:
         for i, tup in enumerate(result):
             result[i] = (tup[0], self.df.loc[self.df['Name'] == tup[0], 'synopsis'].iloc[0])
 
-        #print(result])
         return result[:10]  
+    
+def tester():
+    anime = 'Cowboy Bebop'
+    genres = ['Action', 'Fantasy']
+    keywords = ''
+    data = pd.read_csv('../data/output.csv')
+    r = ranking(data)
+    results = r.get_ranking(anime, genres, keywords)
+    print(results)
+
+if __name__ == "__main__":
+    tester()
