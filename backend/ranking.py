@@ -226,9 +226,12 @@ class ranking:
 
         result = sorted(product, key=lambda x: x[1], reverse=True)
         for i, tup in enumerate(result):
-            result[i] = (tup[0], self.df.loc[self.df['Name'] == tup[0], 'synopsis'].iloc[0])
+            result[i] = (tup[0], self.df.loc[self.df['Name'] == tup[0], 'synopsis'].iloc[0], self.df.loc[self.df['Name'] == tup[0], 'Score'].iloc[0], self.df.loc[self.df['Name'] == tup[0], 'Genres'].iloc[0])
 
         return result[:10]  
+    
+    def self_info(self, anime, genres, keywords):
+        return (anime, genres, keywords, self.df.loc[self.df['Name'] == anime, 'synopsis'].iloc[0])
     
 def tester():
     anime = 'Cowboy Bebop'

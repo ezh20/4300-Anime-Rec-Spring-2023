@@ -38,7 +38,7 @@ def to_results():
     keywords = request.form['keyword-input']
     df = pd.read_csv('../data/output.csv')
     r = ranking(df)
-    return render_template("results.html", results = r.get_ranking(anime, genres, keywords), title='Results')
+    return render_template("results.html", results = r.get_ranking(anime, genres, keywords), title='Results', uinp = r.self_info(anime, genres, keywords))
 
 if __name__ == "__main__":
     app.run(debug=True)

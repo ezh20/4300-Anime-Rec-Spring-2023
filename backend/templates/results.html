@@ -6,8 +6,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap" rel="stylesheet">
 
 <body>
+    <div class="user-input-card">
+        <h1>You inputted ...</h1>
+
+        <div class="card-holder">
+            <div class="card">
+                <div class="card-front">
+                    <img class="card-img" src="../static/images/place.jpg">
+                    <h3 class="card-title"> {{ uinp[0] }}</h3>
+                </div>
+                <div class="card-back">
+                    <h3 class="card-subtitle"> {{ uinp[0] }} </h3>
+                    <p class="card-synopsis">{{ uinp[3] }}</p>
+                    <h3 class="card-score">Keywords: {{ uinp[2] }}</h3>
+                    <h3 class="card-cats">Genres: {{ ",".join(uinp[1]) }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="header">
-        <h1>Our recs</h1>
+        <h1>so we recommend ...</h1>
 
         <a href="/">
             <form action="/">
@@ -17,19 +36,26 @@
     </div>
 
     <div class="results-list">   
+        {% for item in results %}
         <div class="card-holder">
-            {% for item in results %}
             <div class="card">
-                <img class="card-img" src="../static/images/place.jpg">
-                <h3 class="card-title"> {{ item[0] }}</h3>
-                <p class="card-synopsis">{{ item[1] }}</p>
+                <div class="card-front">
+                    <img class="card-img" src="../static/images/place.jpg">
+                    <h3 class="card-title"> {{ item[0] }}</h3>
+                </div>
+                <div class="card-back">
+                    <h3 class="card-subtitle"> {{ item[0] }} </h3>
+                    <p class="card-synopsis">{{ item[1] }}</p>
+                    <h3 class="card-score">MAL Score: {{ item[2] }} / 10</h3>
+                    <h3 class="card-cats">Genres: {{ item[3] }}</h3>
+                </div>
             </div>
-            {% endfor %}
         </div>
+        {% endfor %}
     </div>
 
 
-    <script>
+    <!-- <script>
         // Get all the card elements
         const cards = document.querySelectorAll('.card');
 
@@ -45,5 +71,5 @@
                 synopsis.style.display = 'none';
             });
         });
-    </script>
+    </script> -->
 </body>
