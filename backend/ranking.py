@@ -236,7 +236,10 @@ class ranking:
         return result[:10]  
     
     def self_info(self, anime, genres, keywords):
-        return (anime, genres, keywords, self.df.loc[self.df['MAL_ID']  == self.anime_name_to_id[anime.lower()], 'synopsis'].iloc[0])
+        if anime != "":
+            return (anime, genres, keywords, self.df.loc[self.df['MAL_ID']  == self.anime_name_to_id[anime.lower()], 'synopsis'].iloc[0])
+        else:
+            return ("", genres, keywords, "")
     
 def tester():
     anime = 'Cowboy Bebop'

@@ -9,6 +9,7 @@
     <div class="user-input-card">
         <h1>You inputted ...</h1>
 
+        {% if uinp[0] != "" %}
         <div class="card-holder">
             <div class="card">
                 <div class="card-front">
@@ -18,11 +19,18 @@
                 <div class="card-back">
                     <h3 class="card-subtitle"> {{ uinp[0] }} </h3>
                     <p class="card-synopsis">{{ uinp[3] }}</p>
-                    <h3 class="card-score">Keywords: {{ uinp[2] }}</h3>
-                    <h3 class="card-cats">Genres: {{ ",".join(uinp[1]) }}</h3>
+                    <h3 class="card-score">Keywords: {{ "None inputted :(" if uinp[2] == "" else uinp[2] }}</h3>
+                    <h3 class="card-cats">Genres: {{ "None inputted :(" if uinp[1]|length == 0 else ", ".join(uinp[1]) }}</h3>
                 </div>
             </div>
         </div>
+        {% else %} 
+        <div class="static-card">
+            <h3 class="card-no-title">Anime: None inputted :(</h3>
+            <h3 class="card-score">Keywords: {{ "None inputted :(" if uinp[2] == "" else uinp[2] }}</h3>
+            <h3 class="card-cats">Genres: {{ "None inputted :(" if uinp[1]|length == 0 else ", ".join(uinp[1]) }}</h3>
+        </div>
+        {% endif %}
     </div>
 
     <div class="header">
