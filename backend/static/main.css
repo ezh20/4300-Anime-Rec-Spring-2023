@@ -72,6 +72,7 @@ input[type="text"] {
   width: 100%;
   margin-bottom: 10px;
   text-align: center;
+  margin: 0 auto;
 }
 
 button[type="submit"] {
@@ -83,11 +84,27 @@ button[type="submit"] {
   margin-top: 10px;
   font-size: 1.1em;
   cursor: pointer;
+  margin-right: 100px;
   transition: background-color 0.3s ease-in-out;
 }
 
 button[type="submit"]:hover {
   background-color: #f8796e;
+}
+
+select {
+  background-color: #333;
+  color: #fff;
+  border: none;
+}
+
+select option {
+  background-color: #333;
+  color: #fff;
+}
+
+select option:hover {
+  background-color: #666;
 }
 
 @keyframes picture-anim {
