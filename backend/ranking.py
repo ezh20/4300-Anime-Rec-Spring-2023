@@ -20,10 +20,14 @@ class ranking:
         # Drop Duplicate names
         self.df.drop_duplicates(subset='Name', inplace=True)
 
+        # Making anime title not case sensitive
+        # self.df['Name'] = self.df['Name'].str.lower()
+
+
         self.anime_id_to_index = {anime_id:index for index, anime_id in enumerate(self.df['MAL_ID'])}
-        self.anime_name_to_id = {name:mid for name, mid in zip(self.df['Name'], self.df['MAL_ID'])}
+        self.anime_name_to_id = {name.lower():mid for name, mid in zip(self.df['Name'], self.df['MAL_ID'])}
         self.anime_id_to_name = {v:k for k,v in self.anime_name_to_id.items()}
-        self.anime_name_to_index = {name:self.anime_id_to_index[self.anime_name_to_id[name]] for name in self.df['Name']}
+        self.anime_name_to_index = {name.lower():self.anime_id_to_index[self.anime_name_to_id[name.lower()]] for name in self.df['Name']}
         self.anime_index_to_name = {v:k for k,v in self.anime_name_to_index.items()}
         tfidf_vec = self.build_vectorizer(max_features=n_feats, stop_words="english")
         doc_by_vocab = np.empty([len(self.df), 5000])
@@ -131,6 +135,7 @@ class ranking:
                 matrix: np.ndarray}
         Returns: List<Tuple>
         """
+        mov = mov.lower()
         if mov not in self.anime_name_to_index:
             return[(df['Name'][i], 1) for i in range(0,len(df['Name']))]
 
@@ -143,7 +148,7 @@ class ranking:
         # Get list of similarity scores for movie
         mov_score_lst = []
         for index, row in df.iterrows(): 
-            mov2 = row['Name']
+            mov2 = row['Name'].lower()
             sim = 0
             if mov != mov2:
                 sim = self.get_sim(mov, mov2, input_doc_mat, input_movie_name_to_index)
@@ -231,7 +236,7 @@ class ranking:
         return result[:10]  
     
     def self_info(self, anime, genres, keywords):
-        return (anime, genres, keywords, self.df.loc[self.df['Name'] == anime, 'synopsis'].iloc[0])
+        return (anime, genres, keywords, self.df.loc[self.df['MAL_ID']  == self.anime_name_to_id[anime.lower()], 'synopsis'].iloc[0])
     
 def tester():
     anime = 'Cowboy Bebop'

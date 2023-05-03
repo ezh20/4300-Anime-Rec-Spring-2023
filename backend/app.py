@@ -40,5 +40,9 @@ def to_results():
     r = ranking(df)
     return render_template("results.html", results = r.get_ranking(anime, genres, keywords), title='Results', uinp = r.self_info(anime, genres, keywords))
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# @app.route("/episodes")
+# def episodes_search():
+#     text = request.args.get("title")
+#     return sql_search(text)
+
+app.run(debug=True)
