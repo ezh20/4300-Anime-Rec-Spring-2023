@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>AnimeRec </title>
+  <title>AnimeRecs</title>
   <link rel="stylesheet" type="text/css" href='../static/main.css'>
 </head>
 
@@ -17,7 +17,7 @@
     <form action="/results" method="post">
       <input type="text" id="anime-input" name="anime-input" placeholder="Input an anime... (opt)">
       <input type="text" id="keyword-input" name="keyword-input" placeholder="Input keywords... (opt)">
-      <select id="genre-select" name="genre-select" multiple size="3">
+      <select id="genre-select" name="genre-select" multiple multiselect-max-items="3" multiselect-hide-x="true" onchange="console.log(this.selectedOptions)">
           <option value="Comedy">Comedy</option>
           <option value="Action">Action</option>
           <option value="Fantasy">Fantasy</option>
@@ -31,5 +31,7 @@
     </form>
   </div>
 </body>
+
+<script src="../static/multiselect-dropdown.js" ></script>
 
 </html>
