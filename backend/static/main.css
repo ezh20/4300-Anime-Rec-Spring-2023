@@ -67,13 +67,13 @@ input[type="text"] {
   margin-bottom: 10px;
 }
 
-.form-container select {
+/* .form-container select {
   display: block;
   width: 100%;
   margin-bottom: 10px;
   text-align: center;
   margin: 0 auto;
-}
+} */
 
 button[type="submit"] {
   background-color: #f44336;
