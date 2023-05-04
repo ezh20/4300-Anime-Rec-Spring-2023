@@ -39,7 +39,7 @@ def home():
     if start: 
         query = "SELECT * FROM mytable"
         results = mysql_engine.query_selector(query)
-        df = pd.DataFrame(results, columns=["MAL_ID", "Name" , "Score", "Genres", "synopsis"])
+        df = pd.DataFrame(results, columns=["MAL_ID", "Name" , "Score", "Genres", "sypnopsis", "image_url", "synopsis"])
         r = ranking(df)
         start = False
     return render_template('main.html',title="AnimeRecs")

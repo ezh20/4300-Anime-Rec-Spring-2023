@@ -11,7 +11,7 @@ from sklearn.preprocessing import normalize
 class ranking:
     # Load the CSV file into a Pandas dataframe
     def __init__(self, data):
-        n_feats = 2500
+        n_feats = 4000
         # print(data)
         self.df = data.iloc[:n_feats]
         # Rename the "sypnopsis" column to "synopsis"
@@ -236,10 +236,14 @@ class ranking:
         return result[:10]  
     
     def self_info(self, anime, genres, keywords):
-        if anime != "":
+        print(len(self.anime_name_to_id))
+        if anime != "" and anime.lower() in self.anime_name_to_id:
             return (anime, genres, keywords, self.df.loc[self.df['MAL_ID']  == self.anime_name_to_id[anime.lower()], 'synopsis'].iloc[0])
+        elif anime == "":
+            return ("N/A", genres, keywords, "")
         else:
-            return ("", genres, keywords, "")
+            return (anime + " but it's not the dataset", genres, keywords, "")
+            
     
 def tester():
     anime = 'Cowboy Bebop'
